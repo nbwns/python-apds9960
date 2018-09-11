@@ -29,3 +29,4 @@ pip install apds9960
   - simple ambient light level demo: [rpi](rpi/test_ambient.py), [micropython](micropython/test_ambient.py)
   - simple gesture detection demo: [rpi](rpi/test_gesture.py), [micropython](micropython/test_gesture.py)
   - simple proximity level demo: [rpi](rpi/test_prox.py), [micropython](micropython/test_prox.py)
+  - proximity level pushed to AWS demo: [rpi](rpi/aws/app/apds9960-proximity.py)
