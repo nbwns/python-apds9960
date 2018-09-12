@@ -20,7 +20,7 @@ import ConfigParser
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 from datetime import datetime
 
-class APDS9960:
+class APDS9960AWS:
     def __init__(self):
         self.port = 1
         self.bus = smbus.SMBus(self.port)
@@ -58,7 +58,7 @@ class APDS9960:
         myMQTTClient.subscribe(self.config.get('aws', 'subscription-topic'), 1, self.awsCallback)
         print('Subscribed to topic : ' + self.config.get('aws', 'subscription-topic'))
 
-def run():
+    def run(self):
         self.initAwsMqtt()
         try:
             # Interrupt-Event hinzufuegen, steigende Flanke
@@ -71,10 +71,11 @@ def run():
             self.apds.enableProximitySensor()
             oval = -1
             while True:
-                sleep(0.25)
+                sleep(float(self.config.get('app','measure-delay')))
                 val = self.apds.readProximity()
+                print(val)
                 if val != oval:
-                    print("proximity={}".format(val))
+                    print("proximity changed={}".format(val))
                     currentDatetime = datetime.today().isoformat()
                     myMQTTClient.publish(self.config.get('aws', 'publish-topic'), '{"deviceId":"' + self.config.get('aws', 'device-id') + '", "date":"' + currentDatetime + '", "Proximity":' + '"' + str(val) + '"}', 0)
                     oval = val
@@ -82,7 +83,7 @@ def run():
         finally:
             GPIO.cleanup()
             myMQTTClient.disconnect()
-            print "Bye"
+            print("Bye")
 
-a = APDS9960()
+a = APDS9960AWS()
 a.run()
